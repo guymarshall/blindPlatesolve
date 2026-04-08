@@ -1,5 +1,8 @@
-/target
+# DEV
 /.vscode
+*.class
+
+# IMAGES
 *.fit
 *.fits
 *.tif
@@ -7,4 +10,4 @@
 *.png
 
 # JUST FOR TESTING
-test_file_path.txt
+testFilePath.txt
