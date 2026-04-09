@@ -3,69 +3,56 @@ import java.nio.charset.StandardCharsets;
 
 public class FitsReader {
     public static Image getImage(String path) throws IOException {
-        boolean endReached = false;
-        int width = 0;
-        int height = 0;
+        int width = -1;
+        int height = -1;
 
         try (BufferedInputStream reader = new BufferedInputStream(new FileInputStream(path))) {
-            byte[] block = new byte[2880];
+            byte[] card = new byte[80];
 
-            while (!endReached) {
-                int bytesRead = reader.readNBytes(block, 0, 2880);
-                if (bytesRead < 2880) {
+            while (true) {
+                int bytesRead = reader.readNBytes(card, 0, 80);
+                if (bytesRead < 80) {
                     throw new EOFException("Unexpected end of file");
                 }
 
-                for (int i = 0; i < 2880; i += 80) {
-                    String line = new String(block, i, 80, StandardCharsets.US_ASCII);
+                String line = new String(card, StandardCharsets.US_ASCII);
+                String keyword = line.substring(0, 8).trim();
 
-                    String keyword = line.substring(0, 8).trim();
+                if ("END".equals(keyword)) {
+                    break;
+                }
 
-                    if (keyword.equals("END")) {
-                        endReached = true;
-                        break;
-                    }
+                if ("NAXIS1".equals(keyword)) {
+                    width = parseValue(line);
+                } else if ("NAXIS2".equals(keyword)) {
+                    height = parseValue(line);
+                }
 
-                    if (keyword.equals("NAXIS1") || keyword.equals("NAXIS2")) {
-                        int equalPosition = line.indexOf('=');
-                        if (equalPosition != -1) {
-                            String value = line.substring(equalPosition + 1);
-
-                            int slashPosition = value.indexOf('/');
-                            if (slashPosition != -1) {
-                                value = value.substring(0, slashPosition);
-                            }
-
-                            value = value.trim();
-
-                            if (keyword.equals("NAXIS1")) {
-                                width = Integer.parseInt(value);
-                            }
-
-                            if (keyword.equals("NAXIS2")) {
-                                height = Integer.parseInt(value);
-                            }
-
-                            if (width != 0 && height != 0) {
-                                endReached = true;
-                                break;
-                            }
-                        }
-                    }
+                if (width != -1 && height != -1) {
+                    break;
                 }
             }
         }
 
-        if (width == 0) {
-            System.out.println("Width not found");
-            System.exit(1);
-        }
-
-        if (height == 0) {
-            System.out.println("Height not found");
-            System.exit(1);
+        if (width == -1 || height == -1) {
+            throw new IllegalStateException("Missing NAXIS1 or NAXIS2 in FITS header");
         }
 
         return new Image(width, height);
+    }
+
+    private static int parseValue(String line) {
+        int equalPos = line.indexOf('=');
+        if (equalPos == -1) {
+            return -1;
+        }
+
+        String value = line.substring(equalPos + 1);
+        int slashPos = value.indexOf('/');
+        if (slashPos != -1) {
+            value = value.substring(0, slashPos);
+        }
+
+        return Integer.parseInt(value.trim());
     }
 }
