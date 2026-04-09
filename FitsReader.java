@@ -3,7 +3,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class FitsReader {
-
     public static List<Map.Entry<String, String>> getHeaders(String path) throws IOException {
         List<Map.Entry<String, String>> headers = new ArrayList<>();
 
