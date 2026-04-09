@@ -1,7 +1,8 @@
+import java.io.IOException;
 import java.nio.file.*;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws IOException, IllegalStateException {
         // TODO REMOVE: get test file path
         byte[] buffer = Files.readAllBytes(Paths.get("testFilePath.txt"));
         String testFilePath = new String(buffer).trim();

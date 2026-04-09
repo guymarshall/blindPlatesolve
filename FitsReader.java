@@ -2,7 +2,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 public class FitsReader {
-    public static Image getImage(String path) throws IOException {
+    public static Image getImage(String path) throws IOException, IllegalStateException {
         int width = -1;
         int height = -1;
 
