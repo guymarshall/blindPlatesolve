@@ -16,7 +16,7 @@ public class FitsReader {
                 }
 
                 for (int i = 0; i < 2880; i += 80) {
-                    String line = new String(block, i, 80, StandardCharsets.UTF_8);
+                    String line = new String(block, i, 80, StandardCharsets.US_ASCII);
 
                     String keyword = line.substring(0, 8).trim();
 
