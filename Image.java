@@ -2,18 +2,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Image {
-    public int width;
-    public int height;
+    public Dimensions dimensions;
     public List<Star> stars;
 
-    public Image(int width, int height) {
-        this.width = width;
-        this.height = height;
+    public Image(Dimensions dimensions) {
+        this.dimensions = dimensions;
         this.stars = new ArrayList<>();
     }
 
     @Override
     public String toString() {
-        return String.format("Image{width:%d, height=%d, stars=%s}", width, height, stars);
+        return String.format("Image{dimensions:%s, stars=%s}", dimensions, stars);
     }
 }

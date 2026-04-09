@@ -2,7 +2,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 public class FitsReader {
-    public static Image getImage(String path) throws IOException, IllegalStateException {
+    public static Dimensions getImageDimensions(String path) throws IOException, IllegalStateException {
         int width = -1;
         int height = -1;
 
@@ -38,7 +38,7 @@ public class FitsReader {
             throw new IllegalStateException("Missing NAXIS1 or NAXIS2 in FITS header");
         }
 
-        return new Image(width, height);
+        return new Dimensions(width, height);
     }
 
     private static int parseValue(String line) {

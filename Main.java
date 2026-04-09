@@ -7,9 +7,11 @@ public class Main {
         byte[] buffer = Files.readAllBytes(Paths.get("testFilePath.txt"));
         String testFilePath = new String(buffer).trim();
 
-        // open image
-        Image image = FitsReader.getImage(testFilePath);
-        System.out.println(image);
+        // get image dimensions
+        Dimensions dimensions = FitsReader.getImageDimensions(testFilePath);
+        System.out.println(dimensions);
+
+        // get image data
 
         // identify stars
 
