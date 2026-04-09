@@ -6,6 +6,8 @@ public class FitsReader {
     public static Image getImage(String path) throws IOException {
         List<Map.Entry<String, String>> headers = new ArrayList<>();
         boolean endReached = false;
+        int width = 0;
+        int height = 0;
 
         try (BufferedInputStream reader = new BufferedInputStream(new FileInputStream(path))) {
             byte[] block = new byte[2880];
@@ -37,17 +39,34 @@ public class FitsReader {
 
                         value = value.trim();
                         headers.add(new AbstractMap.SimpleEntry<>(keyword, value));
+
+                        if (keyword.equals("NAXIS1")) {
+                            width = Integer.parseInt(value);
+                        }
+
+                        if (keyword.equals("NAXIS2")) {
+                            height = Integer.parseInt(value);
+                        }
+
+                        if (width != 0 && height != 0) {
+                            endReached = true;
+                            break;
+                        }
                     }
                 }
             }
         }
 
-        Map<String, String> headerMap = new HashMap<>();
-        for (Map.Entry<String, String> entry : headers) {
-            headerMap.put(entry.getKey(), entry.getValue());
+        if (width == 0) {
+            System.out.println("Width not found");
+            System.exit(1);
         }
-        int width = Integer.parseInt(headerMap.get("NAXIS1"));
-        int height = Integer.parseInt(headerMap.get("NAXIS2"));
+
+        if (height == 0) {
+            System.out.println("Height not found");
+            System.exit(1);
+        }
+
         return new Image(width, height);
     }
 }
