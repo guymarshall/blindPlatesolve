@@ -1,5 +1,4 @@
 import java.nio.file.*;
-import java.util.*;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -8,14 +7,7 @@ public class Main {
         String testFilePath = new String(buffer).trim();
 
         // open image
-        List<Map.Entry<String, String>> headers = FitsReader.getHeaders(testFilePath);
-        Map<String, String> headerMap = new HashMap<>();
-        for (Map.Entry<String, String> entry : headers) {
-            headerMap.put(entry.getKey(), entry.getValue());
-        }
-        int width = Integer.parseInt(headerMap.get("NAXIS1"));
-        int height = Integer.parseInt(headerMap.get("NAXIS2"));
-        Image image = new Image(width, height);
+        Image image = FitsReader.getImage(testFilePath);
         System.out.println(image);
 
         // identify stars

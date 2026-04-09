@@ -3,13 +3,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class FitsReader {
-    public static List<Map.Entry<String, String>> getHeaders(String path) throws IOException {
+    public static Image getImage(String path) throws IOException {
         List<Map.Entry<String, String>> headers = new ArrayList<>();
+        boolean endReached = false;
 
         try (BufferedInputStream reader = new BufferedInputStream(new FileInputStream(path))) {
             byte[] block = new byte[2880];
 
-            while (true) {
+            while (!endReached) {
                 int read = reader.readNBytes(block, 0, 2880);
                 if (read < 2880) {
                     throw new EOFException("Unexpected end of file");
@@ -21,7 +22,8 @@ public class FitsReader {
                     String keyword = line.substring(0, 8).trim();
 
                     if (keyword.equals("END")) {
-                        return headers;
+                        endReached = true;
+                        break;
                     }
 
                     int equalPosition = line.indexOf('=');
@@ -39,5 +41,13 @@ public class FitsReader {
                 }
             }
         }
+
+        Map<String, String> headerMap = new HashMap<>();
+        for (Map.Entry<String, String> entry : headers) {
+            headerMap.put(entry.getKey(), entry.getValue());
+        }
+        int width = Integer.parseInt(headerMap.get("NAXIS1"));
+        int height = Integer.parseInt(headerMap.get("NAXIS2"));
+        return new Image(width, height);
     }
 }
